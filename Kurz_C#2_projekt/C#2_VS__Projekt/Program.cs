@@ -1,10 +1,10 @@
 ﻿namespace C_2_VS__Projekt
 {
-    internal class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            GameSimulation.Run();
         }
     }
 }
