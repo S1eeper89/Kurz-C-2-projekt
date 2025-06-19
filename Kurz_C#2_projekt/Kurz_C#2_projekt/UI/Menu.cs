@@ -19,7 +19,9 @@ namespace RPGGame.UI
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        var player = new Player("Hráč", 100, 20, 10);
+                        Console.WriteLine("Zadej jméno:");
+                        var name = Console.ReadLine();
+                        var player = new Player(name, 100, 20, 10);
                         new GameSimulation(player).GameLoop();
                         break;
                     case "2":
