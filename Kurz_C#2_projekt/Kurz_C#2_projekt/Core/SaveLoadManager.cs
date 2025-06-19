@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text.Json;
+using System.Collections.Generic;
 using RPGGame.Models;
-using RPGGame.Core;
 
 namespace RPGGame.Core
 {
@@ -9,22 +9,43 @@ namespace RPGGame.Core
     {
         public static void SaveGame(string filePath, Player player, MapManager mapManager)
         {
-            var gameState = new
+            var state = new GameState
             {
                 Player = player,
-                PlayerPosition = mapManager.PlayerPosition
+                PlayerPosition = mapManager.PlayerPosition,
+                Monsters = mapManager.GetMonsters().Select(m => new MonsterState
+                {
+                    Name = m.Monster.Name,
+                    Health = m.Monster.Health,
+                    MaxHealth = m.Monster.MaxHealth,
+                    Attack = m.Monster.Attack,
+                    Defense = m.Monster.Defense,
+                    X = m.Position.X,
+                    Y = m.Position.Y
+                }).ToList(),
+                Items = mapManager.GetItems().Select(i => new ItemState
+                {
+                    Type = i.Item is Potion ? "Potion" : "Weapon",
+                    Name = i.Item.Name,
+                    Description = i.Item.Description,
+                    X = i.Position.X,
+                    Y = i.Position.Y,
+                    HealAmount = (i.Item as Potion)?.HealAmount,
+                    AttackBonus = (i.Item as Weapon)?.AttackBonus
+                }).ToList(),
+                MapWidth = mapManager.Width,
+                MapHeight = mapManager.Height
             };
-            string jsonString = JsonSerializer.Serialize(gameState);
-            File.WriteAllText(filePath, jsonString);
+
+            File.WriteAllText(filePath, JsonSerializer.Serialize(state, new JsonSerializerOptions { WriteIndented = true }));
         }
 
-        public static (Player, (int X, int Y)) LoadGame(string filePath)
+
+        public static GameState LoadGame(string filePath)
         {
             string jsonString = File.ReadAllText(filePath);
-            var gameState = JsonSerializer.Deserialize<dynamic>(jsonString);
-            var player = JsonSerializer.Deserialize<Player>(gameState.GetProperty("Player").ToString());
-            var position = gameState.GetProperty("PlayerPosition").Deserialize<(int X, int Y)>();
-            return (player, position);
+            var state = JsonSerializer.Deserialize<GameState>(jsonString);
+            return state;
         }
     }
 }

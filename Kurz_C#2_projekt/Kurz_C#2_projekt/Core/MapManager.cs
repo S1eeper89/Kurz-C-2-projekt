@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using RPGGame.Core;
 using RPGGame.Models;
-using RPGGame.Core;
+using System;
+using System.Collections.Generic;
 
 namespace RPGGame.Core
 {
@@ -10,27 +10,63 @@ namespace RPGGame.Core
     /// </summary>
     public class MapManager
     {
-        private const int Width = 10;
-        private const int Height = 10;
         private Tile[,] _grid;
-        private Dictionary<(int X, int Y), Item> _items;
-
-        public (int X, int Y) PlayerPosition { get; private set; }
+        private Dictionary<(int, int), Item> _items;
         private Player _player;
 
+        public (int X, int Y) PlayerPosition { get; private set; }
+
+        // Konstruktor pro načtení stavu hry
+        public MapManager(Player player, GameState state)
+        {
+            _player = player;
+            _grid = new Tile[state.MapWidth, state.MapHeight];
+            _items = new Dictionary<(int, int), Item>();
+
+            // Inicializace gridu
+            for (int y = 0; y < state.MapHeight; y++)
+                for (int x = 0; x < state.MapWidth; x++)
+                    _grid[x, y] = new Tile();
+
+            // Nastav pozici hráče
+            PlayerPosition = state.PlayerPosition;
+            _grid[PlayerPosition.X, PlayerPosition.Y].HasPlayer = true;
+
+            // Načti monstra
+            foreach (var m in state.Monsters)
+            {
+                var monster = new Monster(m.Name, m.MaxHealth, m.Attack, m.Defense);
+                monster.ReceiveDamage(m.MaxHealth - m.Health);
+                _grid[m.X, m.Y].Occupant = monster;
+            }
+
+            // Načti itemy
+            foreach (var i in state.Items)
+            {
+                Item item = null;
+                if (i.Type == "Potion")
+                    item = new Potion(i.Name, i.Description, i.HealAmount ?? 0);
+                else if (i.Type == "Weapon")
+                    item = new Weapon(i.Name, i.Description, i.AttackBonus ?? 0);
+
+                if (item != null)
+                {
+                    _items[(i.X, i.Y)] = item;
+                    _grid[i.X, i.Y].Type = TileType.Item;
+                }
+            }
+        }
         public MapManager(Player player)
         {
             _player = player;
-            _grid = new Tile[Width, Height];
+            // Nastav základní velikost mapy (např. 10x10, jak bylo v původním kódu)
+            int width = 10, height = 10;
+            _grid = new Tile[width, height];
             _items = new Dictionary<(int, int), Item>();
-            InitMap();
-        }
 
-        private void InitMap()
-        {
-            // Inicializace mapy
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
+            // Inicializace gridu
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
                     _grid[x, y] = new Tile();
 
             // Startovní pozice hráče
@@ -38,7 +74,7 @@ namespace RPGGame.Core
             _grid[0, 0].HasPlayer = true;
 
             // Cíl
-            _grid[9, 9].Type = TileType.Goal;
+            _grid[width - 1, height - 1].Type = TileType.Goal;
 
             // Předměty
             PlaceItem(1, 1, new Potion("Lektvar zdraví", "Obnoví 20 HP", 20));
@@ -49,88 +85,56 @@ namespace RPGGame.Core
             _grid[4, 6].Occupant = new Monster("Ork", 50, 12, 4);
         }
 
+        public MapManager(Player player, MapContent content, int width = 10, int height = 10)
+        {
+            _player = player;
+            _grid = new Tile[width, height];
+
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                    _grid[x, y] = new Tile();
+
+            PlayerPosition = (0, 0);
+            _grid[PlayerPosition.X, PlayerPosition.Y].HasPlayer = true;
+
+            foreach (var (x, y, monster) in content.Monsters)
+                _grid[x, y].Occupant = monster;
+
+            foreach (var (x, y, item) in content.Items)
+            {
+                _items[(x, y)] = item;
+                _grid[x, y].Type = TileType.Item;
+            }
+        }
+
         private void PlaceItem(int x, int y, Item item)
         {
             _items[(x, y)] = item;
             _grid[x, y].Type = TileType.Item;
         }
-
-        public void RenderMap()
+        public IEnumerable<(Monster Monster, (int X, int Y) Position)> GetMonsters()
         {
-            Console.Clear();
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < _grid.GetLength(1); y++)
             {
-                for (int x = 0; x < Width; x++)
+                for (int x = 0; x < _grid.GetLength(0); x++)
                 {
-                    var cell = _grid[x, y];
-                    char symbol = cell.Type switch
-                    {
-                        TileType.Goal => 'X',
-                        TileType.Item => 'I',
-                        _ when cell.HasPlayer => 'P',
-                        _ when cell.Occupant != null => 'E',
-                        _ => '.'
-                    };
-                    Console.Write(symbol);
+                    if (_grid[x, y].Occupant is Monster monster)
+                        yield return (monster, (x, y));
                 }
-                Console.WriteLine();
             }
         }
 
-        public void MovePlayer(Direction dir)
+        public IEnumerable<(Item Item, (int X, int Y) Position)> GetItems()
         {
-            var (x, y) = PlayerPosition;
-            int newX = x, newY = y;
-            switch (dir)
+            foreach (var kvp in _items)
             {
-                case Direction.North: newY--; break;
-                case Direction.South: newY++; break;
-                case Direction.West: newX--; break;
-                case Direction.East: newX++; break;
+                yield return (kvp.Value, kvp.Key);
             }
-            if (newX < 0 || newY < 0 || newX >= Width || newY >= Height)
-                return;
-
-            // Odstranění hráče z původní pozice
-            _grid[x, y].HasPlayer = false;
-
-            // Interakce na nové pozici
-            var targetCell = _grid[newX, newY];
-
-            // Souboj
-            if (targetCell.Occupant is Monster monster)
-            {
-                monster.ReceiveDamage(_player.Attack);
-                if (!monster.IsAlive)
-                {
-                    Console.WriteLine($"Zabil jsi {monster.Name}!");
-                    targetCell.Occupant = null;
-                }
-                else
-                {
-                    _player.ReceiveDamage(monster.Attack);
-                    Console.WriteLine($"{monster.Name} útočí a bere ti {monster.Attack - _player.Defense} HP!");
-                }
-                Console.ReadKey();
-            }
-            // Seber položku
-            else if (_items.TryGetValue((newX, newY), out var item))
-            {
-                Console.WriteLine($"Našel jsi předmět: {item.Name} - {item.Description}");
-                _player.AddItemToInventory(item);
-                _items.Remove((newX, newY));
-                Console.ReadKey();
-            }
-            // Cíl
-            else if (targetCell.Type == TileType.Goal)
-            {
-                Console.WriteLine("Našel jsi cíl! Vyhrál jsi!");
-                Environment.Exit(0);
-            }
-
-            // Nastavení hráče na novou pozici
-            PlayerPosition = (newX, newY);
-            _grid[newX, newY].HasPlayer = true;
         }
+
+        // Property pro šířku a výšku mapy
+        public int Width => _grid.GetLength(0);
+        public int Height => _grid.GetLength(1);
+
     }
 }
