@@ -4,12 +4,19 @@ using System;
 
 namespace RPGGame.Core
 {
+    /// <summary>
+    /// Řídí hlavní herní smyčku, pohyb hráče po mapě, interakci s předměty, souboje a správu stavu hry.
+    /// </summary>
     public class GameSimulation
     {
         private Player _player;
         private MapManager _mapManager;
         private bool _isRunning;
 
+        /// <summary>
+        /// Konstruktor pro novou hru. Vytvoří mapu a inicializuje obsah (monstra, předměty).
+        /// </summary>
+        /// <param name="player">Hráč, který bude ovládán.</param>
         public GameSimulation(Player player)
         {
             _player = player;
@@ -23,12 +30,20 @@ namespace RPGGame.Core
             _mapManager = new MapManager(_player, content);
         }
 
+        /// <summary>
+        /// Konstruktor pro načtení uložené hry.
+        /// </summary>
+        /// <param name="player">Hráč, jehož stav se načítá.</param>
+        /// <param name="state">Načtený stav hry.</param>
         public GameSimulation(Player player, GameState state)
         {
             _player = player;
             _mapManager = new MapManager(_player, state);
         }
 
+        /// <summary>
+        /// Hlavní herní smyčka – vykreslí mapu, vyhodnocuje vstupy hráče a zajišťuje průběh hry.
+        /// </summary>
         public void GameLoop()
         {
             _isRunning = true;
@@ -45,6 +60,7 @@ namespace RPGGame.Core
                     case ConsoleKey.A:
                     case ConsoleKey.S:
                     case ConsoleKey.D:
+                        // Pohyb hráče na mapě podle směru
                         var dir = key switch
                         {
                             ConsoleKey.W => Direction.North,
@@ -54,19 +70,23 @@ namespace RPGGame.Core
                             _ => throw new InvalidOperationException()
                         };
                         var moveResult = _mapManager.MovePlayer(dir);
+                        // Pokud hráč zemře (i při útěku) nebo uteče se zdravím 0, návrat do menu
                         if (moveResult == MoveResult.PlayerDied || (moveResult == MoveResult.PlayerEscaped && _player.Health <= 0))
                             ReturnToMenu();
                         break;
 
                     case ConsoleKey.I:
+                        // Otevření inventáře hráče
                         InventoryView.Show(_player);
                         break;
                     case ConsoleKey.T:
+                        // Uložení hry do souboru
                         SaveLoadManager.SaveGame("save.json", _player, _mapManager);
                         Console.WriteLine("Hra byla uložena.");
                         Console.ReadKey();
                         break;
                     case ConsoleKey.L:
+                        // Načtení hry ze souboru
                         var state = SaveLoadManager.LoadGame("save.json");
                         _player = state.Player;
                         _mapManager = new MapManager(_player, state);
@@ -74,9 +94,11 @@ namespace RPGGame.Core
                         Console.ReadKey();
                         break;
                     case ConsoleKey.M:
+                        // Návrat do hlavního menu
                         ReturnToMenu();
                         break;
                     case ConsoleKey.Q:
+                        // Konec hry
                         _isRunning = false;
                         break;
                 }

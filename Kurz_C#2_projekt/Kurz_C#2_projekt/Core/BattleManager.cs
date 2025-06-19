@@ -3,9 +3,19 @@ using RPGGame.UI;
 
 namespace RPGGame.Core
 {
+    /// <summary>
+    /// Statická třída zajišťující logiku soubojů mezi hráčem a monstrem.
+    /// Umožňuje útok, ústup a použití inventáře během boje.
+    /// </summary>
     public static class BattleManager
     {
-        // Vrací bool, zda hráč přežil
+        /// <summary>
+        /// Spustí souboj mezi hráčem a konkrétním monstrem.
+        /// Vrací true, pokud hráč přežije, jinak false.
+        /// </summary>
+        /// <param name="player">Instance hráče, který bojuje.</param>
+        /// <param name="monster">Instance monstra, se kterým se bojuje.</param>
+        /// <returns>True pokud hráč přežije, false pokud zemře nebo zemře při útěku.</returns>
         public static bool RunBattle(Player player, Monster monster)
         {
             while (player.IsAlive && monster.IsAlive)
@@ -19,6 +29,7 @@ namespace RPGGame.Core
                 switch (input)
                 {
                     case ConsoleKey.A:
+                        // Hráč útočí na monstrum, pokud přežije, útočí i monstrum na hráče
                         monster.ReceiveDamage(player.Attack);
                         Console.WriteLine($"Útočíš na {monster.Name} ({monster.Health} HP zbývá)");
                         if (!monster.IsAlive) break;
@@ -27,17 +38,17 @@ namespace RPGGame.Core
                         break;
 
                     case ConsoleKey.B:
-                        // Ústup – hráč obdrží zásah a ukončí souboj
-                        player.ReceiveDamage(monster.Attack); // Trestný zásah (např. dvojnásobek útoku)
+                        // Hráč se pokusí o útěk, obdrží trestný zásah, pokud přežije, souboj končí
+                        player.ReceiveDamage(monster.Attack); // Trestný zásah (může být např. dvojnásobek útoku)
                         Console.WriteLine($"Utekl jsi a utrpěl trestný zásah! ({player.Health} HP zbývá)");
                         Console.ReadKey(true);
                         if (player.Health <= 0)
                             return false;
-                         else
-                            return true;// Hráč utekl
+                        else
+                            return true; // Hráč utekl, ale přežil
 
                     case ConsoleKey.C:
-                        // Otevři inventář a po návratu pokračuj v kole
+                        // Otevře inventář hráče, po návratu pokračuje v souboji
                         InventoryView.Show(player);
                         break;
 
@@ -48,6 +59,7 @@ namespace RPGGame.Core
                 Console.WriteLine("Pokračuj klávesou...");
                 Console.ReadKey(true);
             }
+            // Vrací true, pokud hráč souboj přežije
             return player.IsAlive;
         }
     }
