@@ -4,9 +4,15 @@ using RPGGame.Core;
 
 namespace RPGGame.UI
 {
+    /// <summary>
+    /// Hlavní menu hry. Nabízí spuštění nové hry, načtení uložené hry nebo ukončení.
+    /// </summary>
     public static class Menu
     {
-        public static void Show()
+        /// <summary>
+        /// Zobrazí hlavní menu a zpracuje výběr uživatele.
+        /// </summary>
+        public static void MainMenu()
         {
             bool running = true;
             while (running)
@@ -16,20 +22,34 @@ namespace RPGGame.UI
                 Console.WriteLine("2) Načíst hru");
                 Console.WriteLine("3) Konec");
                 Console.Write("Vyber možnost: ");
-                switch (Console.ReadLine())
+
+                var input = Console.ReadKey(true).Key;
+                switch (input)
                 {
-                    case "1":
+                    case ConsoleKey.D1:
+                    case ConsoleKey.NumPad1:
+                        Console.Clear();
                         Console.WriteLine("Zadej jméno:");
                         var name = Console.ReadLine();
                         var player = new Player(name, 100, 20, 10);
                         new GameSimulation(player).GameLoop();
                         break;
-                    case "2":
-                        var state = SaveLoadManager.LoadGame("save.json");
-                        var loadedPlayer = state.Player;
-                        new GameSimulation(loadedPlayer, state).GameLoop();
+                    case ConsoleKey.D2:
+                    case ConsoleKey.NumPad2:
+                        var state = SaveLoadManager.LoadGame("save.xml");
+                        if (state == null)
+                        {
+                            Console.WriteLine("Načtení hry selhalo. Stiskni prosím klávesu pro návrat do menu");
+                            Console.ReadKey();
+                        }
+                        else
+                        {
+                            var loadedPlayer = state.Player;
+                            new GameSimulation(loadedPlayer, state).GameLoop();
+                        }
                         break;
-                    case "3":
+                    case ConsoleKey.D3:
+                    case ConsoleKey.NumPad3:
                         running = false;
                         break;
                 }

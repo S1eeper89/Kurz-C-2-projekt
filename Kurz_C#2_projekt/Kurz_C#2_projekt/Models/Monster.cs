@@ -1,6 +1,8 @@
 ﻿namespace RPGGame.Models
 {
-    /// <summary>Reprezentuje nepřátele se základními atributy.</summary>
+    /// <summary>
+    /// Reprezentuje nepřátele se základními atributy a logikou pro přijímání poškození.
+    /// </summary>
     public class Monster : Entity
     {
         public Monster(string name, int maxHealth, int attack, int defense)
@@ -11,7 +13,7 @@
         public override void ReceiveDamage(int damage)
         {
             base.ReceiveDamage(damage);
-            // Po smrti monstra lze přidat logiku (např. loot, odměnu)
+            // Zde lze do budoucna přidat např. loot nebo animace smrti
         }
     }
 }

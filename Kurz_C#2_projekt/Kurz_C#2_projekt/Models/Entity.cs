@@ -1,7 +1,8 @@
 ﻿namespace RPGGame.Models
 {
     /// <summary>
-    /// Základ pro všechny herní entity (hráč, monstrum apod.).
+    /// Abstraktní základ pro všechny entity ve hře (hráč, monstrum, ...).
+    /// Obsahuje atributy: jméno, zdraví, útok, obranu, logiku pro příjem poškození a bool pro určení trvání.
     /// </summary>
     public abstract class Entity
     {
@@ -20,18 +21,21 @@
             Defense = defense;
         }
 
-        /// <summary>Aplikuje poškození, sníží životy (HP nesmí klesnout pod 0).</summary>
+        /// <summary>
+        /// Sníží zdraví o zadané poškození (damage). Hodnota nesmí klesnout pod nulu.
+        /// </summary>
         public virtual void ReceiveDamage(int damage)
         {
             int damageTaken = damage - Defense;
-            if (damageTaken < 0)
-                damageTaken = 0;
+            if (damageTaken < 0) damageTaken = 0;
 
             Health -= damageTaken;
-            if (Health < 0)
-                Health = 0;
+            if (Health < 0) Health = 0;
         }
 
+        /// <summary>
+        /// Vrací true, pokud entita žije (HP > 0).
+        /// </summary>
         public bool IsAlive => Health > 0;
     }
 }

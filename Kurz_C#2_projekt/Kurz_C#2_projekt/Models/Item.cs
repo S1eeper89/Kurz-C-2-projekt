@@ -1,6 +1,8 @@
 ﻿namespace RPGGame.Models
 {
-    /// <summary>Základní abstraktní třída pro předměty ve hře.</summary>
+    /// <summary>
+    /// Abstraktní základ pro všechny předměty ve hře.
+    /// </summary>
     public abstract class Item
     {
         public string Name { get; protected set; }
@@ -12,13 +14,19 @@
             Description = description;
         }
 
-        /// <summary>Efekt předmětu, který se aplikuje při jeho použití hráčem.</summary>
+        /// <summary>
+        /// Definuje efekt předmětu při jeho použití hráčem.
+        /// </summary>
         public abstract void ApplyEffect(Player player);
     }
 
+    /// <summary>
+    /// Lektvar – použitím vyléčí hráče o danou hodnotu.
+    /// </summary>
     public class Potion : Item
     {
         public int HealAmount { get; private set; }
+
         public Potion(string name, string description, int healAmount)
             : base(name, description)
         {
@@ -31,9 +39,13 @@
         }
     }
 
+    /// <summary>
+    /// Zbraň – zvýší útok hráče při použití.
+    /// </summary>
     public class Weapon : Item
     {
         public int AttackBonus { get; private set; }
+
         public Weapon(string name, string description, int attackBonus)
             : base(name, description)
         {

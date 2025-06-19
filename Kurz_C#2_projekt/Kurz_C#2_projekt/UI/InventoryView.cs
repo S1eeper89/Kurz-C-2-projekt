@@ -3,9 +3,16 @@ using RPGGame.Models;
 
 namespace RPGGame.UI
 {
-    /// <summary>Zobrazuje inventář hráče a umožňuje použití předmětů.</summary>
+    /// <summary>
+    /// Statická třída pro zobrazení a správu inventáře hráče v konzoli.
+    /// Umožňuje použití předmětů nebo návrat zpět.
+    /// </summary>
     public static class InventoryView
     {
+        /// <summary>
+        /// Vykreslí inventář hráče, umožní použít předmět nebo se vrátit zpět.
+        /// </summary>
+        /// <param name="player">Instance hráče, jehož inventář se má zobrazit.</param>
         public static void Show(Player player)
         {
             Console.Clear();

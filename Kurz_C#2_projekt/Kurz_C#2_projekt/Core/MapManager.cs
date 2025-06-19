@@ -16,16 +16,33 @@ namespace RPGGame.Core
         PlayerWon
     }
 
+    /// <summary>
+    /// Řídí mapu, pohyb hráče a veškerou interakci s entitami na mapě.
+    /// </summary>
     public class MapManager
     {
         private Tile[,] _grid;
         private Dictionary<(int, int), Item> _items = new();
         private Player _player;
 
+        /// <summary>
+        /// Aktuální pozice hráče na mapě.
+        /// </summary>
         public (int X, int Y) PlayerPosition { get; private set; }
+
+        /// <summary>
+        /// Šířka mapy.
+        /// </summary>
         public int Width => _grid.GetLength(0);
+
+        /// <summary>
+        /// Výška mapy.
+        /// </summary>
         public int Height => _grid.GetLength(1);
 
+        /// <summary>
+        /// Konstruktor mapy – nová hra.
+        /// </summary>
         public MapManager(Player player, MapContent content, int width = 10, int height = 10)
         {
             _player = player;
@@ -52,6 +69,9 @@ namespace RPGGame.Core
             }
         }
 
+        /// <summary>
+        /// Konstruktor mapy – načtení uložené hry.
+        /// </summary>
         public MapManager(Player player, GameState state)
         {
             _player = player;
@@ -166,11 +186,6 @@ namespace RPGGame.Core
                             Console.ReadKey(true);
                             return MoveResult.PlayerEscaped;
                         }
-                    }
-                    // Pokud hráč utekl
-                    if (survived == false && _player.IsAlive)
-                    {
-                        return MoveResult.PlayerEscaped;
                     }
                 }
 
