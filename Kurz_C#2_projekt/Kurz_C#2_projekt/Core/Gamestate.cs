@@ -3,6 +3,7 @@ using RPGGame.Models;
 
 namespace RPGGame.Core
 {
+    /// <summary>Stav hry pro uložení a načtení.</summary>
     public class GameState
     {
         public Player Player { get; set; }
@@ -13,7 +14,6 @@ namespace RPGGame.Core
         public int MapHeight { get; set; }
     }
 
-    // Pomocné třídy pro ukládání stavů monster a itemů:
     public class MonsterState
     {
         public string Name { get; set; }
@@ -27,12 +27,11 @@ namespace RPGGame.Core
 
     public class ItemState
     {
-        public string Type { get; set; } // např. "Potion", "Weapon"
+        public string Type { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
-        // další pole podle typu itemu (např. HealAmount, AttackBonus)
         public int? HealAmount { get; set; }
         public int? AttackBonus { get; set; }
     }

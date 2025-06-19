@@ -3,9 +3,7 @@ using RPGGame.Models;
 
 namespace RPGGame.UI
 {
-    /// <summary>
-    /// Zobrazuje inventář hráče a umožňuje použití předmětů.
-    /// </summary>
+    /// <summary>Zobrazuje inventář hráče a umožňuje použití předmětů.</summary>
     public static class InventoryView
     {
         public static void Show(Player player)

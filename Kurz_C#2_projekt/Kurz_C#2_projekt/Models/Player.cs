@@ -1,7 +1,10 @@
-﻿namespace RPGGame.Models
+﻿using System.Collections.Generic;
+
+namespace RPGGame.Models
 {
     public class Player : Entity
     {
+
         public List<Item> Inventory { get; private set; }
         public Weapon EquippedWeapon { get; private set; }
 
@@ -10,6 +13,7 @@
         {
             Inventory = new List<Item>();
         }
+
         public void Heal(int amount)
         {
             Health = Math.Min(Health + amount, MaxHealth);
@@ -23,17 +27,15 @@
             Inventory.Remove(item);
         }
 
-        // Přidáno – vybavení zbraně
         public void EquipWeapon(Weapon weapon)
         {
             if (EquippedWeapon != null)
-                Attack -= EquippedWeapon.AttackBonus;  // Odebrat bonus předchozí zbraně
+                Attack -= EquippedWeapon.AttackBonus;
 
             EquippedWeapon = weapon;
-            Attack += weapon.AttackBonus;             // Přidat bonus nové zbraně
+            Attack += weapon.AttackBonus;
         }
 
-        // Přidáno – odebrání vybavené zbraně
         public void UnequipWeapon()
         {
             if (EquippedWeapon != null)

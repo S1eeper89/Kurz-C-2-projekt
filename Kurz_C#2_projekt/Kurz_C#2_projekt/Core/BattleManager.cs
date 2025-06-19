@@ -28,9 +28,13 @@ namespace RPGGame.Core
 
                     case ConsoleKey.B:
                         // Ústup – hráč obdrží zásah a ukončí souboj
-                        player.ReceiveDamage(monster.Attack * 2); // Trestný zásah (např. dvojnásobek útoku)
+                        player.ReceiveDamage(monster.Attack); // Trestný zásah (např. dvojnásobek útoku)
                         Console.WriteLine($"Utekl jsi a utrpěl trestný zásah! ({player.Health} HP zbývá)");
-                        return false; // Hráč utekl
+                        Console.ReadKey(true);
+                        if (player.Health <= 0)
+                            return false;
+                         else
+                            return true;// Hráč utekl
 
                     case ConsoleKey.C:
                         // Otevři inventář a po návratu pokračuj v kole

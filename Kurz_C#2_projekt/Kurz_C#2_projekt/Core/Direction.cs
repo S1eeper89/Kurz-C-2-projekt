@@ -1,8 +1,6 @@
 ﻿namespace RPGGame.Core
 {
-    /// <summary>
-    /// Směry pohybu.
-    /// </summary>
+    /// <summary>Směry pohybu na mapě.</summary>
     public enum Direction
     {
         North,

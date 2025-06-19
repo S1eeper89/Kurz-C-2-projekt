@@ -2,9 +2,7 @@
 
 namespace RPGGame.Core
 {
-    /// <summary>
-    /// Typ obsahu jednotlivého políčka na mapě.
-    /// </summary>
+    /// <summary>Typ obsahu jednotlivého políčka na mapě.</summary>
     public enum TileType
     {
         Empty,  // prázdné pole

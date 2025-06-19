@@ -6,7 +6,7 @@ namespace RPGGame
     {
         static void Main(string[] args)
         {
-            MainMenu.Show();
+            Menu.Show();
         }
     }
 }

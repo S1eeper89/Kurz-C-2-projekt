@@ -1,8 +1,7 @@
 ﻿namespace RPGGame.Models
 {
     /// <summary>
-    /// Abstraktní základ pro všechny herní entity (hráč, monstrum, apod.).
-    /// Zahrnuje vlastnosti jako jméno, životy (aktuální i maximální), útok a obranu.
+    /// Základ pro všechny herní entity (hráč, monstrum apod.).
     /// </summary>
     public abstract class Entity
     {
@@ -16,14 +15,12 @@
         {
             Name = name;
             MaxHealth = maxHealth;
-            Health = maxHealth;           // Inicializujeme aktuální životy na maximální
+            Health = maxHealth;
             Attack = attack;
             Defense = defense;
         }
 
-        /// <summary>
-        /// Aplikuje poškození a snižuje životy. HP nesmí klesnout pod 0.
-        /// </summary>
+        /// <summary>Aplikuje poškození, sníží životy (HP nesmí klesnout pod 0).</summary>
         public virtual void ReceiveDamage(int damage)
         {
             int damageTaken = damage - Defense;
@@ -35,9 +32,6 @@
                 Health = 0;
         }
 
-        /// <summary>
-        /// Zda je entita stále naživu.
-        /// </summary>
         public bool IsAlive => Health > 0;
     }
 }

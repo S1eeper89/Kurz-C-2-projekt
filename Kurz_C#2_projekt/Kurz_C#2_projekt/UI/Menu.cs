@@ -1,10 +1,10 @@
 ﻿using System;
-using RPGGame.Core;
 using RPGGame.Models;
+using RPGGame.Core;
 
 namespace RPGGame.UI
 {
-    public static class MainMenu
+    public static class Menu
     {
         public static void Show()
         {
@@ -25,8 +25,9 @@ namespace RPGGame.UI
                         new GameSimulation(player).GameLoop();
                         break;
                     case "2":
-                        var (p, pos) = SaveLoadManager.LoadGame("save.json");
-                        new GameSimulation(p).GameLoop(); // případně poslat i pozici do MapManageru
+                        var state = SaveLoadManager.LoadGame("save.json");
+                        var loadedPlayer = state.Player;
+                        new GameSimulation(loadedPlayer, state).GameLoop();
                         break;
                     case "3":
                         running = false;

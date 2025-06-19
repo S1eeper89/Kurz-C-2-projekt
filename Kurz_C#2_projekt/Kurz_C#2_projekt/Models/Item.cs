@@ -1,10 +1,6 @@
-﻿using System;
-
-namespace RPGGame.Models
+﻿namespace RPGGame.Models
 {
-    /// <summary>
-    /// Základní abstraktní třída pro všechny typy předmětů ve hře.
-    /// </summary>
+    /// <summary>Základní abstraktní třída pro předměty ve hře.</summary>
     public abstract class Item
     {
         public string Name { get; protected set; }
@@ -16,19 +12,13 @@ namespace RPGGame.Models
             Description = description;
         }
 
-        /// <summary>
-        /// Efekt předmětu, který se aplikuje při jeho použití hráčem.
-        /// </summary>
+        /// <summary>Efekt předmětu, který se aplikuje při jeho použití hráčem.</summary>
         public abstract void ApplyEffect(Player player);
     }
 
-    /// <summary>
-    /// Lektvar – použití obnoví zdraví hráče.
-    /// </summary>
     public class Potion : Item
     {
         public int HealAmount { get; private set; }
-
         public Potion(string name, string description, int healAmount)
             : base(name, description)
         {
@@ -39,16 +29,11 @@ namespace RPGGame.Models
         {
             player.Heal(HealAmount);
         }
-
     }
 
-    /// <summary>
-    /// Zbraň – při použití zvýší útok hráče (vybaví zbraň).
-    /// </summary>
     public class Weapon : Item
     {
         public int AttackBonus { get; private set; }
-
         public Weapon(string name, string description, int attackBonus)
             : base(name, description)
         {
@@ -57,7 +42,7 @@ namespace RPGGame.Models
 
         public override void ApplyEffect(Player player)
         {
-            player.EquipWeapon(this); // Předá zbraň hráči, aby ji vybavil správně
+            player.EquipWeapon(this);
         }
     }
 }
