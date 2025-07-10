@@ -22,7 +22,7 @@ namespace RPGGame.UI
                 Console.WriteLine("2) Načíst hru");
                 Console.WriteLine("3) Konec");
                 Console.Write("Vyber možnost: ");
-
+                 
                 var input = Console.ReadKey(true).Key;
                 switch (input)
                 {

@@ -17,7 +17,7 @@ namespace RPGGame.Core
         /// <summary>
         /// Pozice hráče na mapě (souřadnice X, Y).
         /// </summary>
-        public (int X, int Y) PlayerPosition { get; set; } xxxxxx // nahradit za public class       
+        public (int X, int Y) PlayerPosition { get; set; } //xxxxxx // nahradit za public class       
 
         /// <summary>
         /// Seznam stavů všech monster na mapě.

@@ -1,6 +1,7 @@
 ﻿using RPGGame.Models;
 using RPGGame.UI;
 using System;
+using System.ComponentModel.Design;
 
 namespace RPGGame.Core
 {
@@ -72,36 +73,46 @@ namespace RPGGame.Core
                         var moveResult = _mapManager.MovePlayer(dir);
                         // Pokud hráč zemře (i při útěku) nebo uteče se zdravím 0, návrat do menu
                         if (moveResult == MoveResult.PlayerDied || (moveResult == MoveResult.PlayerEscaped && _player.Health <= 0))
+                        {
                             ReturnToMenu();
+                        }
+                        else if (moveResult == MoveResult.PlayerWon)
+                        {
+                            Console.WriteLine($"Gratulujeme {_player.Name} Zachránil jsi princeznu a zvítězil, cesta do menu je zaručená, pro pokračování stiskni enter");
+                            Console.ReadLine();
+                            ReturnToMenu();
+
+                        }
                         break;
 
+
                     case ConsoleKey.I:
-                        // Otevření inventáře hráče
-                        InventoryView.Show(_player);
-                        break;
-                    case ConsoleKey.T:
-                        // Uložení hry do souboru
-                        SaveLoadManager.SaveGame("save.json", _player, _mapManager);
-                        Console.WriteLine("Hra byla uložena.");
-                        Console.ReadKey();
-                        break;
-                    case ConsoleKey.L:
-                        // Načtení hry ze souboru
-                        var state = SaveLoadManager.LoadGame("save.json");
-                        _player = state.Player;
-                        _mapManager = new MapManager(_player, state);
-                        Console.WriteLine("Hra byla načtena.");
-                        Console.ReadKey();
-                        break;
-                    case ConsoleKey.M:
-                        // Návrat do hlavního menu
-                        ReturnToMenu();
-                        break;
-                    case ConsoleKey.Q:
-                        // Konec hry
-                        _isRunning = false;
-                        break;
-                }
+                                // Otevření inventáře hráče
+                                InventoryView.Show(_player);
+                                break;
+                            case ConsoleKey.T:
+                                // Uložení hry do souboru
+                                SaveLoadManager.SaveGame("save.json", _player, _mapManager);
+                                Console.WriteLine("Hra byla uložena.");
+                                Console.ReadKey();
+                                break;
+                            case ConsoleKey.L:
+                                // Načtení hry ze souboru
+                                var state = SaveLoadManager.LoadGame("save.json");
+                                _player = state.Player;
+                                _mapManager = new MapManager(_player, state);
+                                Console.WriteLine("Hra byla načtena.");
+                                Console.ReadKey();
+                                break;
+                            case ConsoleKey.M:
+                                // Návrat do hlavního menu
+                                ReturnToMenu();
+                                break;
+                            case ConsoleKey.Q:
+                                // Konec hry
+                                _isRunning = false;
+                                break;
+                            }
             }
         }
 
