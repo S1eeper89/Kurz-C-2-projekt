@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 namespace RPGGame.Core
 {
     /// <summary>
-    /// Zajišťuje ukládání a načítání stavu hry ze souboru.
+    /// Zajišťuje ukládání a načítání stavu hry ze souboru pomoc9 JSON.
     /// </summary>
     public static class SaveLoadManager
     {

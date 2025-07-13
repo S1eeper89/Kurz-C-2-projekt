@@ -92,14 +92,32 @@ namespace RPGGame.Core
                                 break;
                             case ConsoleKey.T:
                                 // Uložení hry do souboru
-                                SaveLoadManager.SaveGame("save.json", _player, _mapManager);
+                                SaveLoadManager.SaveGame("save.XML", _player, _mapManager);
                                 Console.WriteLine("Hra byla uložena.");
                                 Console.ReadKey();
                                 break;
                             case ConsoleKey.L:
                                 // Načtení hry ze souboru
-                                var state = SaveLoadManager.LoadGame("save.json");
-                                _player = state.Player;
+
+                                
+
+                        var state = SaveLoadManager.LoadGame("save.XML");
+
+                            if (state == null)
+                            {
+                                Console.WriteLine("Chyba: Uložená hra nebyla načtena (soubor neexistuje nebo je poškozený).");
+                                Console.ReadKey();
+                                break;
+                            }
+
+                            if (state.Player == null)
+                            {
+                                Console.WriteLine("Chyba: Soubor byl načten, ale hráč nebyl nalezen.");
+                                Console.ReadKey();
+                                break;
+                            }
+
+                        _player = state.Player;
                                 _mapManager = new MapManager(_player, state);
                                 Console.WriteLine("Hra byla načtena.");
                                 Console.ReadKey();
