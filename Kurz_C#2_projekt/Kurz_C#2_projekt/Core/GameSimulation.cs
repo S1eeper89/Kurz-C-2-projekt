@@ -76,7 +76,7 @@ namespace RPGGame.Core
                         {
                             ReturnToMenu();
                         }
-                        else if (moveResult == MoveResult.PlayerWon)
+                        else if (moveResult == MoveResult.PlayerWonGame)
                         {
                             Console.WriteLine($"Gratulujeme {_player.Name} Zachránil jsi princeznu a zvítězil, cesta do menu je zaručená, pro pokračování stiskni enter");
                             Console.ReadLine();

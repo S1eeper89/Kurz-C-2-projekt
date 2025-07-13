@@ -10,19 +10,19 @@ namespace RPGGame.Core
         /// <summary>
         /// Seznam monster na mapě a jejich pozice.
         /// </summary>
-        public List<(int X, int Y, Monster Monster)> Monsters { get; set; } = new();
+        public List<(Position Position, Monster Monster)> Monsters { get; set; } = new();
 
         /// <summary>
         /// Seznam předmětů na mapě a jejich pozice.
         /// </summary>
-        public List<(int X, int Y, Item Item)> Items { get; set; } = new();
+        public List<(Position Position, Item Item)> Items { get; set; } = new();
 
         /// <summary>
         /// Přidá monstrum na určenou pozici.
         /// </summary>
         public void AddMonster(int x, int y, Monster monster)
         {
-            Monsters.Add((x, y, monster));
+            Monsters.Add((new Position(x, y), monster));
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace RPGGame.Core
         /// </summary>
         public void AddItem(int x, int y, Item item)
         {
-            Items.Add((x, y, item));
+            Items.Add((new Position (x, y), item));
         }
     }
 }

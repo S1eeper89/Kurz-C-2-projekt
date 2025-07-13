@@ -27,16 +27,14 @@ namespace RPGGame.Core
                     MaxHealth = m.Monster.MaxHealth,
                     Attack = m.Monster.Attack,
                     Defense = m.Monster.Defense,
-                    X = m.Position.X,
-                    Y = m.Position.Y
+                    Position = new Position(m.Position.X, m.Position.Y),
                 }).ToList(),
                 Items = mapManager.GetItems().Select(i => new ItemState
                 {
                     Type = i.Item is Potion ? "Potion" : "Weapon",
                     Name = i.Item.Name,
                     Description = i.Item.Description,
-                    X = i.Position.X,
-                    Y = i.Position.Y,
+                    Position = new Position(i.Position.X, i.Position.Y),
                     HealAmount = (i.Item as Potion)?.HealAmount,
                     AttackBonus = (i.Item as Weapon)?.AttackBonus
                 }).ToList(),
@@ -44,10 +42,15 @@ namespace RPGGame.Core
                 MapHeight = mapManager.Height
             };
 
-            var serializer = new XmlSerializer(typeof(GameState));
-            using (var writer = new StreamWriter(filePath))
+            try
             {
+                var serializer = new XmlSerializer(typeof(GameState));
+                using var writer = new StreamWriter(filePath);
                 serializer.Serialize(writer, state);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Chyba při ukládání: {ex.Message}");
             }
         }
 

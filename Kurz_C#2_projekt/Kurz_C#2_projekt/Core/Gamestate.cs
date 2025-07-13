@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using RPGGame.Models;
+﻿using RPGGame.Models;
+using System.Collections.Generic;
 
 namespace RPGGame.Core
 {
@@ -17,7 +17,7 @@ namespace RPGGame.Core
         /// <summary>
         /// Pozice hráče na mapě (souřadnice X, Y).
         /// </summary>
-        public (int X, int Y) PlayerPosition { get; set; } //xxxxxx // nahradit za public class       
+        public Position PlayerPosition { get; set; } //xxxxxx // nahradit za public class       
 
         /// <summary>
         /// Seznam stavů všech monster na mapě.
@@ -50,8 +50,7 @@ namespace RPGGame.Core
         public int MaxHealth { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
+        public Position Position { get; set; }
     }
 
     /// <summary>
@@ -62,8 +61,7 @@ namespace RPGGame.Core
         public string Type { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
+        public Position Position { get; set; }
         public int? HealAmount { get; set; }
         public int? AttackBonus { get; set; }
     }

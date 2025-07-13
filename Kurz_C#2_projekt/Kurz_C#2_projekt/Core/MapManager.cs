@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using RPGGame.Models;
+
 
 namespace RPGGame.Core
 {
@@ -13,7 +15,8 @@ namespace RPGGame.Core
         None,
         PlayerDied,
         PlayerEscaped,
-        PlayerWon
+        PlayerWonFight,
+        PlayerWonGame
     }
 
     /// <summary>
@@ -28,7 +31,7 @@ namespace RPGGame.Core
         /// <summary>
         /// Aktuální pozice hráče na mapě.
         /// </summary>
-        public (int X, int Y) PlayerPosition { get; private set; }
+        public Position PlayerPosition { get; private set; }
 
         /// <summary>
         /// Šířka mapy.
@@ -53,19 +56,19 @@ namespace RPGGame.Core
                     _grid[x, y] = new Tile();
 
             // Startovní pozice hráče
-            PlayerPosition = (0, 0);
+            PlayerPosition = new Position(0, 0);
             _grid[PlayerPosition.X, PlayerPosition.Y].HasPlayer = true;
 
             // Nastavení cíle
             _grid[width - 1, height - 1].Type = TileType.Goal;
 
-            foreach (var (x, y, monster) in content.Monsters)
-                _grid[x, y].Occupant = monster;
-
-            foreach (var (x, y, item) in content.Items)
+            foreach (var (position, monster) in content.Monsters)
+                _grid[position.X, position.Y].Occupant = monster;
+                 
+            foreach (var (position, item) in content.Items)
             {
-                _items[(x, y)] = item;
-                _grid[x, y].Type = TileType.Item;
+                _items[(position.X, position.Y)] = item;
+                _grid[position.X, position.Y].Type = TileType.Item;
             }
         }
 
@@ -83,6 +86,8 @@ namespace RPGGame.Core
                     _grid[x, y] = new Tile();
 
             PlayerPosition = state.PlayerPosition;
+
+
             _grid[PlayerPosition.X, PlayerPosition.Y].HasPlayer = true;
             // Nastavení cíle
             _grid[state.MapWidth - 1, state.MapHeight - 1].Type = TileType.Goal;
@@ -92,7 +97,7 @@ namespace RPGGame.Core
             {
                 var monster = new Monster(m.Name, m.MaxHealth, m.Attack, m.Defense);
                 monster.ReceiveDamage(m.MaxHealth - m.Health);
-                _grid[m.X, m.Y].Occupant = monster;
+                _grid[m.Position.X, m.Position.Y].Occupant = monster;
             }
 
             // Předměty
@@ -106,8 +111,8 @@ namespace RPGGame.Core
 
                 if (item != null)
                 {
-                    _items[(i.X, i.Y)] = item;
-                    _grid[i.X, i.Y].Type = TileType.Item;
+                    _items[(i.Position.X, i.Position.Y)] = item;
+                    _grid[i.Position.X, i.Position.Y].Type = TileType.Item;
                 }
             }
         }
@@ -122,7 +127,7 @@ namespace RPGGame.Core
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    if (PlayerPosition == (x, y))
+                    if (PlayerPosition.X == x && PlayerPosition.Y == y)
                         Console.Write("P ");
                     else if (_grid[x, y].Occupant is Monster)
                         Console.Write("M ");
@@ -143,21 +148,23 @@ namespace RPGGame.Core
         /// <returns>Výsledek tahu - pro návrat do menu ve GameSimulation.</returns>
         public MoveResult MovePlayer(Direction direction)
         {
-            var (newX, newY) = direction switch
+            int newX = PlayerPosition.X;
+            int newY = PlayerPosition.Y;
+            switch (direction)
             {
-                Direction.North => (PlayerPosition.X, PlayerPosition.Y - 1),
-                Direction.South => (PlayerPosition.X, PlayerPosition.Y + 1),
-                Direction.West => (PlayerPosition.X - 1, PlayerPosition.Y),
-                Direction.East => (PlayerPosition.X + 1, PlayerPosition.Y),
-                _ => PlayerPosition
-            };
+                case Direction.North: newY--; break;
+                case Direction.South: newY++; break;
+                case Direction.West: newX--; break;
+                case Direction.East: newX++; break;
+            }
 
             if (newX >= 0 && newX < Width && newY >= 0 && newY < Height)
             {
                 // Odznač předchozí pozici
-                _grid[PlayerPosition.X, PlayerPosition.Y].HasPlayer = false;
-                PlayerPosition = (newX, newY);
+                PlayerPosition = new Position(newX, newY);
                 _grid[PlayerPosition.X, PlayerPosition.Y].HasPlayer = true;
+
+
 
                 var tile = _grid[newX, newY];
 
@@ -170,7 +177,7 @@ namespace RPGGame.Core
                         tile.Occupant = null;
                         Console.WriteLine($"Porazil jsi {monster.Name}!");
                         Console.ReadKey(true);
-                        return MoveResult.PlayerWon;
+                        return MoveResult.PlayerWonFight;
                     }
                     if (!survived)
                     {
@@ -206,7 +213,7 @@ namespace RPGGame.Core
                     Console.Clear();
                     Console.WriteLine("GRATULUJI! Dostal ses do cíle!");
                     Console.ReadKey(true);
-                    return MoveResult.PlayerWon;
+                    return MoveResult.PlayerWonGame;
                 }
             }
             return MoveResult.None;
@@ -215,14 +222,16 @@ namespace RPGGame.Core
         /// <summary>
         /// Vrátí všechny monstra na mapě.
         /// </summary>
-        public IEnumerable<(Monster Monster, (int X, int Y) Position)> GetMonsters() =>
+        public IEnumerable<(Monster Monster, Position Position)> GetMonsters() =>
             _grid.Cast<Tile>().Select((tile, index) => (tile, index))
                 .Where(t => t.tile.Occupant is Monster)
-                .Select(t => ((Monster)t.tile.Occupant, (t.index % Width, t.index / Width)));
+                .Select(t => ((Monster)t.tile.Occupant, new Position (t.index % Width, t.index / Width)));
 
         /// <summary>
         /// Vrátí všechny předměty na mapě.
         /// </summary>
-        public IEnumerable<(Item Item, (int X, int Y) Position)> GetItems() => _items.Select(i => (i.Value, i.Key));
+        public IEnumerable<(Item Item, Position Position)> GetItems()
+
+            => _items.Select(i => (i.Value, new Position(i.Key.Item1, i.Key.Item2)));
     }
 }
