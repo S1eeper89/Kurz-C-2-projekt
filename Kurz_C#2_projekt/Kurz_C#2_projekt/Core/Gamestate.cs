@@ -9,8 +9,6 @@ namespace RPGGame.Core
     /// </summary>
     public class GameState
     {
-        internal (int X, int Y) PlayerPosition;
-
         /// <summary>
         /// Hráč a jeho aktuální stav.
         /// </summary>
@@ -19,12 +17,8 @@ namespace RPGGame.Core
         /// <summary>
         /// Pozice hráče na mapě (souřadnice X, Y).
         /// </summary>
-        public class position
-        {
-            public int X { get; private set; }
-            public int Y { get; private set; }
-        }
-        
+        public Position PlayerPosition { get; set; } //xxxxxx // nahradit za public class       
+
         /// <summary>
         /// Seznam stavů všech monster na mapě.
         /// </summary>
